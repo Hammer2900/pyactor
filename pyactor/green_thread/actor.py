@@ -136,7 +136,6 @@ class Actor(ActorRef):
         '''
         if msg[METHOD] == 'stop':
             self.running = False
-            # get_host().proxy.stop_actor(self.url)
         else:
             result = None
             try:

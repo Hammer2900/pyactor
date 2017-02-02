@@ -165,7 +165,7 @@ Using RabbitMQ
 
 This library also supports the usage of communication through RabbitMQ queues.
 To use this approach, simply define the hosts with an URL with the scheme
-`amqp` instead of `http`. This will create a dipatcher for that host that works
+`amqp` instead of `http`. This will create a dispatcher for that host that works
 with RabbitMQ, and all its actors will work at that scheme.
 
 You can see an example with ``pyactor\examples\Remote\s1_clientrbb.py``:
@@ -178,9 +178,13 @@ and ``pyactor\examples\Remote\s1_serverrbb.py``:
 .. literalinclude:: ../examples/Remote/s1_serverrbb.py
     :linenos:
 
+You need to specify the RabbitMQ server IP and port to be able to connect.
+Default configuration uses standard parameters localhost on port 5672. To change
+it, use the function :func:`rabbit_config`, with the IP and port desired.
+
 You can configure your rabbit credentials with::
 
-    setRabbitCredentials('user', 'password')
+    set_rabbit_redentials('user', 'password')
 
 If you don't, it will use the default Rabbit guest user, which only can connect
 locally.

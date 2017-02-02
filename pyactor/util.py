@@ -7,7 +7,8 @@ Defined constants:
 from gevent import getcurrent
 from threading import current_thread
 
-
+RABBIT_IP = "localhost"
+RABBIT_PORT = "5672"
 RABBITU = "guest"
 RABBITP = "guest"
 

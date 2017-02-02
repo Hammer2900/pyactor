@@ -3,20 +3,22 @@ import threading
 import cPickle
 from urlparse import urlparse
 
-from pyactor.util import RABBITU, RABBITP
+from pyactor.util import RABBITU, RABBITP, RABBIT_IP, RABBIT_PORT
 
 
 class Source(threading.Thread):
     ''' Facade for simple remote communication using RabbitMQ.
     This connection uses by default the guest RabbitMQ user. To channge
-    credentials see :func:`~.setRabbitCredentials`.
+    credentials see :func:`~.set_rabbit_credentials`.
     '''
     def __init__(self, addr):
         threading.Thread.__init__(self)
         ip, port = addr
         self.url = ip + '/' + str(port)
         creden = pika.PlainCredentials(RABBITU, RABBITP)
-        params = pika.ConnectionParameters(host=ip, credentials=creden)
+        params = pika.ConnectionParameters(host=RABBIT_IP,
+                                           port=int(RABBIT_PORT),
+                                           credentials=creden)
         self.connection = pika.BlockingConnection(params)
 
         self.channel = self.connection.channel()
@@ -52,7 +54,9 @@ class Sink(object):
         ip, port = address[0], int(address[1])
         self.url = ip + '/' + str(port)
         creden = pika.PlainCredentials(RABBITU, RABBITP)
-        params = pika.ConnectionParameters(host=ip, credentials=creden)
+        params = pika.ConnectionParameters(host=RABBIT_IP,
+                                           port=int(RABBIT_PORT),
+                                           credentials=creden)
         self.connection = pika.BlockingConnection(params)
         self.channel = self.connection.channel()
 

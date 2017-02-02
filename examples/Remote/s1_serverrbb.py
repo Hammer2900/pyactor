@@ -2,8 +2,7 @@
 Basic remote example sending tell messages. SERVER
 @author: Daniel Barcelona Pons
 '''
-from pyactor.context import \
-    set_context, create_host, setRabbitCredentials, serve_forever
+from pyactor.context import set_context, create_host, serve_forever
 
 
 class Echo(object):
@@ -14,7 +13,6 @@ class Echo(object):
         print msg
 
 if __name__ == "__main__":
-    # setRabbitCredentials('daniel', 'passs')
     set_context()
     host = create_host('amqp://127.0.0.1:1277/')
 

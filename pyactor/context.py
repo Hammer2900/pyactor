@@ -12,7 +12,21 @@ core_type = None
 available_types = ['thread', 'green_thread']
 
 
-def setRabbitCredentials(user, passw):
+def rabbit_config(ip, port):
+    '''
+    If you use a RabbitMQ server that does not have default configuration,
+    you might need to specify the Ip and port of the server for connection.
+
+    By default, PyActor uses localhost on 5672.
+
+    :param str. ip: Ip address of the RabbitMQ server.
+    :param int port: Port for the RabbbitMQ server.
+    '''
+    util.RABBIT_IP = ip
+    util.RABBIT_PORT = str(port)
+
+
+def set_rabbit_credentials(user, passw):
     '''
     If you use a RabbitMQ server an want to make remote queries, you might
     need to specify new credentials for connection.
