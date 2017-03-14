@@ -2,22 +2,23 @@
 Intervals sample
 @author: Daniel Barcelona Pons
 '''
-from pyactor.context import set_context, create_host, sleep, shutdown, \
-    interval, later
+from pyactor.context import set_context, create_host, sleep, shutdown
+from pyactor.client import ActorC
 
 
-class Registry(object):
+class Registry(ActorC):
     _ask = []
     _tell = ['hello', 'init_start', 'stop_interval']
     # _ref = ['hello']
 
     def init_start(self):
-        self.interval1 = interval(self.host, 1, self.proxy, "hello", "you")
-        later(5, self.proxy, "stop_interval")
+        self.interval1 = self.new_interval(1, "hello", "you")
+        print self.interval1
+        self.new_later(5, "stop_interval", self.interval1, True)
 
-    def stop_interval(self):
-        print "stopping interval"
-        self.interval1.set()
+    # def end_interval(self, iid):
+    #     print "stopping interval"
+    #     self.stop_interval(iid)
 
     def hello(self, msg):
         print self.id, 'Hello', msg

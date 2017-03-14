@@ -1,8 +1,11 @@
 from Queue import Empty
 
-from util import ASK, TELL, TYPE, METHOD, PARAMS, CHANNEL, TO, RESULT
+from util import ASK, TELL, TYPE, METHOD, PARAMS, KPARAMS, CHANNEL, TO, RESULT
 from exceptions import TimeoutError, NotFoundError, HostError
 from util import get_host, get_lock
+
+
+DEFAULT_TIMEOUT = 1
 
 
 def set_actor(module_name):
@@ -94,7 +97,7 @@ class TellWrapper(object):
     def __call__(self, *args, **kwargs):
         #  SENDING MESSAGE TELL
         # msg = TellRequest(TELL, self.__method, args, self.__target)
-        msg = {TYPE: TELL, METHOD: self.__method, PARAMS: args,
+        msg = {TYPE: TELL, METHOD: self.__method, PARAMS: args, KPARAMS: kwargs,
                TO: self.__target}
         self.__channel.send(msg)
 
@@ -118,17 +121,25 @@ class AskWrapper(object):
         self.target = actor_url
 
     def __call__(self, *args, **kwargs):
-        future = kwargs['future'] if 'future' in kwargs.keys() else False
+        try:
+            future = kwargs['future']  # if 'future' in kwargs.keys() else False
+            del kwargs['future']
+        except KeyError:
+            future = False
 
         self.__lock = get_lock()
         if not future:
             self.__channel = actorm.Channel()
-            timeout = kwargs['timeout'] if 'timeout' in kwargs.keys() else 1
+            try:
+                timeout = kwargs['timeout']     # if 'timeout' in kwargs.keys() else 1
+                del kwargs['timeout']
+            except KeyError:
+                timeout = DEFAULT_TIMEOUT
             #  SENDING MESSAGE ASK
             # msg = AskRequest(ASK, self._method, args, self.__channel,
             #                  self.target)
             msg = {TYPE: ASK, METHOD: self._method, PARAMS: args,
-                   CHANNEL: self.__channel, TO: self.target}
+                   KPARAMS: kwargs, CHANNEL: self.__channel, TO: self.target}
             self._actor_channel.send(msg)
             if self.__lock is not None:
                 self.__lock.release()
@@ -146,7 +157,7 @@ class AskWrapper(object):
             else:
                 return result
         else:
-            future_ref = {METHOD: self._method, PARAMS: args,
+            future_ref = {METHOD: self._method, PARAMS: args, KPARAMS: kwargs,
                           CHANNEL: self._actor_channel, TO: self.target,
                           'LOCK': self.__lock}
             return get_host().future_manager.new_future(future_ref)
@@ -157,21 +168,27 @@ class AskRefWrapper(AskWrapper):
     Wrapper for Ask queries that have a proxy in parameters or returns.
     '''
     def __call__(self, *args, **kwargs):
-        future = kwargs['future'] if 'future' in kwargs.keys() else False
+        try:
+            future = kwargs['future']  # if 'future' in kwargs.keys() else False
+            del kwargs['future']
+        except KeyError:
+            future = False
         host = get_host()
         if host is not None:
             new_args = host.dumps(list(args))
+            new_kwargs = host.dumps(kwargs)
         else:
             raise HostError('No such Host on the context of the call.')
 
         if future:
             self.__lock = get_lock()
-            future_ref = {METHOD: self._method, PARAMS: args,
-                          CHANNEL: self._actor_channel, TO: self.target,
-                          'LOCK': self.__lock}
+            future_ref = {METHOD: self._method, PARAMS: new_args,
+                          KPARAMS: new_kwargs, CHANNEL: self._actor_channel,
+                          TO: self.target, 'LOCK': self.__lock}
             return get_host().future_manager.new_future(future_ref, ref=True)
         else:
-            result = super(AskRefWrapper, self).__call__(*new_args, **kwargs)
+            result = super(AskRefWrapper, self).__call__(*new_args,
+                                                         **new_kwargs)
             return get_host().loads(result)
 
 
@@ -181,6 +198,7 @@ class TellRefWrapper(TellWrapper):
         host = get_host()
         if host is not None:
             new_args = host.dumps(list(args))
+            new_kwargs = host.dumps(kwargs)
         else:
             raise HostError('No such Host on the context of the call.')
-        return super(TellRefWrapper, self).__call__(*new_args, **kwargs)
+        return super(TellRefWrapper, self).__call__(*new_args, **new_kwargs)

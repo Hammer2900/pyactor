@@ -9,6 +9,7 @@ from exceptions import HostDownError, AlreadyExistsError, NotFoundError,\
     HostError, IntervalError
 import util
 
+
 core_type = None
 available_types = ['thread', 'green_thread']
 
@@ -177,7 +178,7 @@ class Host(object):
             self.launch_actor('amqp', rpcactor.RPCDispatcher(url, self,
                                                              'rabbit'))
 
-    def spawn(self, aid, klass, param=None):
+    def spawn(self, aid, klass, param=[], kwparam={}):
         '''
         This method creates an actor attached to this host. It will be
         an instance of the class *klass* and it will be assigned an ID
@@ -199,8 +200,6 @@ class Host(object):
             already in use.
         :raises: :class:`HostDownError` if the host is not initiated.
         '''
-        if param is None:
-            param = []
         if not self.alive:
             raise HostDownError()
         if isinstance(klass, basestring):
@@ -214,10 +213,10 @@ class Host(object):
         if url in self.actors.keys():
             raise AlreadyExistsError(url)
         else:
-            obj = klass_(*param)
+            obj = klass_()
             obj.id = aid
             if self.running:
-                obj.host = self.proxy
+                obj.host = Proxy(self.proxy.actor)
             # else:
             #     obj.host = Exception("Host is not an active actor. \
             #                           Use 'init_host' to make it alive.")
@@ -230,6 +229,8 @@ class Host(object):
                 new_actor = actor.Actor(url, klass_, obj)
 
             obj.proxy = Proxy(new_actor)
+
+            obj._initial(*param, **kwparam)
             self.launch_actor(url, new_actor)
             return Proxy(new_actor)
 

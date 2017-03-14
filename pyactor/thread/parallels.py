@@ -3,7 +3,7 @@ from threading import Lock, Thread, current_thread
 from time import sleep
 
 from actor import Actor
-from pyactor.util import get_host, METHOD, PARAMS
+from pyactor.util import get_host, METHOD, PARAMS, KPARAMS
 
 
 class ActorParallel(Actor):
@@ -47,6 +47,7 @@ class ActorParallel(Actor):
             try:
                 invoke = getattr(self._obj, msg[METHOD])
                 params = msg[PARAMS]
+                kparams = msg[KPARAMS]
 
                 if msg[METHOD] in self.ask_parallel:
                     rpc_id = str(uuid.uuid4())
@@ -55,12 +56,12 @@ class ActorParallel(Actor):
                     # insert an rpc id to args
                     params = list(params)
                     params.insert(0, rpc_id)
-                    invoke(*params)
+                    invoke(*params, **kparams)
                     return
                 else:
                     with self.__lock:
                         sleep(0.01)
-                        result = invoke(*params)
+                        result = invoke(*params, **kparams)
             except Exception, e:
                 result = e
                 print result

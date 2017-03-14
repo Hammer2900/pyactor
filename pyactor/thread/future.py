@@ -1,8 +1,8 @@
 import uuid
 from threading import Condition, Thread
 
-from pyactor.util import get_current, get_host, RPC_ID, RESULT
-from pyactor.util import TELL, FUTURE, TYPE, METHOD, PARAMS, CHANNEL, TO
+from pyactor.util import get_current, get_host, RPC_ID, RESULT, TO
+from pyactor.util import TELL, FUTURE, TYPE, METHOD, PARAMS, KPARAMS, CHANNEL
 from pyactor.exceptions import TimeoutError, FutureError
 
 from actor import Channel
@@ -26,6 +26,7 @@ class Future(object):
 
         self.__method = future_ref[METHOD]
         self.__params = future_ref[PARAMS]
+        self.__kparams = future_ref[KPARAMS]
         self.__actor_channel = future_ref[CHANNEL]
         self.__target = future_ref[TO]
         self.__channel = manager_channel
@@ -37,7 +38,7 @@ class Future(object):
             try:
                 # msg = TellRequest(TELL, callback[0], [self], callback[2])
                 msg = {TYPE: TELL, METHOD: callback[0], PARAMS: [self],
-                       TO: callback[2]}
+                       KPARAMS: {}, TO: callback[2]}
                 callback[1].send(msg)
             except Exception, e:
                 raise FutureError('exception calling callback for %r: %r'
@@ -85,7 +86,7 @@ class Future(object):
         # Invoke the callback directly
         # msg = TellRequest(TELL, method, [self], from_actor.url)
         msg = {TYPE: TELL, METHOD: method, PARAMS: [self],
-               TO: from_actor.url}
+               KPARAMS: {}, TO: from_actor.url}
         from_actor.channel.send(msg)
 
     def result(self, timeout=None):
@@ -152,8 +153,8 @@ class Future(object):
             # msg = FutureRequest(FUTURE, self.__method, self.__params,
             #                     self.__channel, self.__target, self.__id)
             msg = {TYPE: FUTURE, METHOD: self.__method, PARAMS: self.__params,
-                   CHANNEL: self.__channel, TO: self.__target,
-                   RPC_ID: self.__id}
+                   KPARAMS: self.__kparams, CHANNEL: self.__channel,
+                   TO: self.__target, RPC_ID: self.__id}
             self.__actor_channel.send(msg)
         else:
             raise FutureError("Future already running.")

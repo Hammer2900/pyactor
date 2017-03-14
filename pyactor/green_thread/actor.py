@@ -4,7 +4,7 @@ from gevent import spawn
 from gevent.queue import Queue
 
 from pyactor.util import ASK, TELL, FUTURE, TYPE, ASKRESPONSE, FUTURERESPONSE
-from pyactor.util import METHOD, PARAMS, RESULT, CHANNEL, RPC_ID
+from pyactor.util import METHOD, PARAMS, KPARAMS, RESULT, CHANNEL, RPC_ID
 from pyactor.util import ref_l, ref_d, get_host
 
 
@@ -145,7 +145,8 @@ class Actor(ActorRef):
             try:
                 invoke = getattr(self._obj, msg[METHOD])
                 params = msg[PARAMS]
-                result = invoke(*params)
+                kparams = msg[KPARAMS]
+                result = invoke(*params, **kparams)
             except Exception, e:
                 if msg[TYPE] == TELL:
                     print e
