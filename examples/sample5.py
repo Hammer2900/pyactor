@@ -2,9 +2,10 @@
 Lookup sample.
 '''
 from pyactor.context import set_context, create_host, sleep, shutdown
+from pyactor.client import ActorC
 
 
-class Echo(object):
+class Echo(ActorC):
     _tell = ['echo', 'bye']
     _ask = ['say_something']
 

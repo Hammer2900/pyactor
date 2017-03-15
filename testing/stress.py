@@ -4,12 +4,13 @@ Stress test. CLIENTs
 '''
 from pyactor.context import set_context, create_host, serve_forever, interval
 from pyactor.exceptions import TimeoutError
+from pyactor.client import ActorC
 
 
 CLIENTS = 100
 
 
-class Connecter(object):
+class Connecter(ActorC):
     _tell = ['send_message', 'init_start', 'set_server']
     _ref = ['set_server']
 
@@ -25,7 +26,7 @@ class Connecter(object):
         # self.server.work(1)
 
 
-class Show(object):
+class Show(ActorC):
     _tell = ['send_message', 'init_start', 'set_server']
     _ref = ['set_server']
 

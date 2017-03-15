@@ -12,10 +12,11 @@ from pyactor.context import *
 from pyactor.proxy import *
 from pyactor.util import *
 from pyactor.exceptions import *
+from pyactor.client import ActorC
 import pyactor.context
 
 
-class Echo:
+class Echo(ActorC):
     _tell = ['echo']
     _ask = ['say_something', 'say_something_slow', 'raise_something']
 
@@ -35,7 +36,7 @@ class Echo:
         raise Exception('raising something')
 
 
-class Bot:
+class Bot(ActorC):
     _tell = ['set_echo', 'ping', 'pong', 'multiping']
     _ask = ['get_name', 'get_proxy', 'get_host', 'get_echo', 'get_echo_ref',
             'check_ref', 'get_real_host']
@@ -92,16 +93,16 @@ class Bot:
         return get_host()
 
 
-class Counter:
+class Counter(ActorC):
     _ask = []
     _tell = ['count', 'init_start', 'stop_interval']
 
     def init_start(self):
-        self.interval1 = interval(self.host, 1, self.proxy, "count")
-        later(4, self.proxy, "stop_interval")
+        interid = self.new_interval(1, "count")
+        self.new_later(4, "stop_interval", interid)
 
-    def stop_interval(self):
-        self.interval1.set()
+    # def stop_interval(self):
+    #     self.interval1.set()
 
     def count(self):
         global cnt
@@ -109,7 +110,7 @@ class Counter:
             cnt += 1
 
 
-class File(object):
+class File(ActorC):
     _ask = ['download']
     _tell = []
 
@@ -119,7 +120,7 @@ class File(object):
         return True
 
 
-class Web(object):
+class Web(ActorC):
     _ask = ['list_files', 'get_file']
     _tell = ['remote_server']
     _parallel = ['list_files', 'remote_server', 'get_file']
@@ -138,7 +139,7 @@ class Web(object):
         return self.server.download(filename, timeout=10)
 
 
-class WebF(object):
+class WebF(ActorC):
     _ask = ['list_files', 'get_file']
     _tell = ['remote_server']
     _parallel = ['list_files', 'remote_server', 'get_file']
@@ -158,7 +159,7 @@ class WebF(object):
         return future.result(6)
 
 
-class WebNP(object):
+class WebNP(ActorC):
     _ask = ['list_files', 'get_file']
     _tell = ['remote_server']
     # _parallel = ['get_file']
@@ -177,7 +178,7 @@ class WebNP(object):
         return self.server.download(filename, timeout=10)
 
 
-class Workload(object):
+class Workload(ActorC):
     _ask = []
     _tell = ['launch', 'download', 'remote_server']
     _parallel = []

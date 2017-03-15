@@ -13,7 +13,7 @@ class Registry(ActorC):
 
     def init_start(self):
         self.interval1 = self.new_interval(1, "hello", "you")
-        print self.interval1
+        # print self.interval1
         self.new_later(5, "stop_interval", self.interval1, True)
 
     # def end_interval(self, iid):

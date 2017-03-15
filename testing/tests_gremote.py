@@ -12,10 +12,11 @@ from pyactor.proxy import *
 from pyactor.util import *
 from pyactor.exceptions import *
 from pyactor.green_thread.rpcactor import RPCDispatcher
+from pyactor.client import ActorC
 import pyactor.context
 
 
-class Echo(object):
+class Echo(ActorC):
     _tell = ['echo']
     _ask = ['say_something', 'say_something_slow', 'raise_something']
 
@@ -36,7 +37,7 @@ class Echo(object):
         raise Exception('raising something')
 
 
-class Bot(object):
+class Bot(ActorC):
     _tell = ['set_echo', 'ping', 'pong', 'multiping']
     _ask = ['get_name', 'get_proxy', 'get_host', 'get_echo', 'get_echo_ref',
             'check_ref', 'get_real_host']
@@ -133,7 +134,7 @@ class TestBasic(unittest.TestCase):
         out = ""
         host2 = create_host('http://127.0.0.1:1389')
 
-        e2 = host2.spawn('echo', 'tests_tremote/Echo')
+        e2 = host2.spawn('echo', 'tests_gremote/Echo')
         e2.echo('1')
         sleep(2)
         # self.assertEqual(out, '1')

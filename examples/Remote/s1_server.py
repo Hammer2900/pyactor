@@ -3,9 +3,10 @@ Basic remote example sending tell messages. SERVER
 @author: Daniel Barcelona Pons
 '''
 from pyactor.context import set_context, create_host, serve_forever
+from pyactor.client import ActorC
 
 
-class Echo(object):
+class Echo(ActorC):
     _tell = ['echo']
     _ask = []
 

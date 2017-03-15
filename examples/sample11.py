@@ -3,9 +3,10 @@ Futures Sample.
 @author: Daniel Barcelona Pons
 '''
 from pyactor.context import set_context, create_host, sleep, shutdown
+from pyactor.client import ActorC
 
 
-class Echo(object):
+class Echo(ActorC):
     _tell = ['echo']
     _ask = ['say_something', 'raise_something']
 
@@ -19,7 +20,7 @@ class Echo(object):
         raise Exception('raising something')
 
 
-class Bot(object):
+class Bot(ActorC):
     _tell = ['set_echo', 'ping', 'pong']
     _ask = []
 

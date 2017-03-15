@@ -9,7 +9,6 @@ from exceptions import HostDownError, AlreadyExistsError, NotFoundError,\
     HostError, IntervalError
 import util
 
-
 core_type = None
 available_types = ['thread', 'green_thread']
 
@@ -195,6 +194,8 @@ class Host(object):
             the instance.
         :param list param: arguments for the init function of the
             spawning actor class.
+        :param dict kwparam: keyword arguments for the init function of the
+            spawning actor class.
         :return: :class:`~.Proxy` of the actor spawned.
         :raises: :class:`AlreadyExistsError`, if the ID specified is
             already in use.
@@ -213,6 +214,10 @@ class Host(object):
         if url in self.actors.keys():
             raise AlreadyExistsError(url)
         else:
+            if not 'ActorC' in map(lambda base: base.__name__, klass_.__bases__):
+                raise HostError("Invalid class for an actor. The actors must" +
+                                " extend the ActorC class. " + str(klass_))
+
             obj = klass_()
             obj.id = aid
             if self.running:
@@ -360,8 +365,14 @@ class Host(object):
                 else:
                     raise HostError("The class specified to look up is" +
                                     " not a class.")
+                # if not 'ActorC' in map(lambda base: base.__name__, klass_.__bases__):
+                #     raise HostError("Invalid class for an actor. The actors " +
+                #                     "must extend the ActorC class. " +
+                #                     str(klass_))
                 remote_actor = actor.ActorRef(url, klass_, dispatcher.channel)
                 return Proxy(remote_actor)
+            except HostError, e:
+                raise e
             except Exception:
                 raise HostError("ERROR looking for the actor on another " +
                                 "server. Hosts must " +

@@ -4,6 +4,7 @@ PING-PONG test. Messages per second.
 '''
 
 from pyactor.context import set_context, create_host, sleep, shutdown
+from pyactor.client import ActorC
 
 from time import time
 
@@ -36,7 +37,7 @@ class StopMessage(Message):
     pass
 
 
-class PingActor(object):
+class PingActor(ActorC):
     _tell = ['send']
 
     def __init__(self, count, pong):
@@ -66,7 +67,7 @@ class PingActor(object):
             raise Exception("Unsupported message: " + msg.__class__.__name__)
 
 
-class PongActor(object):
+class PongActor(ActorC):
     _tell = ['send']
 
     pongCount = 0

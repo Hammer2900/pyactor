@@ -9,9 +9,6 @@ class Echo(ActorC):
     _tell = ['echo']
     # _ask = []
 
-    def __init__(self, msg, iddd):
-        print 'ECHO init', self.id, msg, iddd
-
     def echo(self, msg):
         print msg
 
@@ -19,7 +16,7 @@ class Echo(ActorC):
 if __name__ == "__main__":
     set_context()
     h = create_host()
-    e1 = h.spawn('echo1', Echo, ['sup'], {'iddd':'kkk'})
+    e1 = h.spawn('echo1', Echo)
     e1.echo('hello there !!')
 
     sleep(1)

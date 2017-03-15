@@ -1,5 +1,7 @@
 '''
-Proxy references by parameter sample.
+Proxy references by parameter sample. Passing proxies to __init__.
+The parameters passed to the spawn to initialize the actor instance are
+always checked fro proxies. No need to add __init__ to _ref.
 '''
 from pyactor.context import set_context, create_host, sleep, shutdown
 from pyactor.client import ActorC
@@ -28,10 +30,8 @@ class Bot(ActorC):
     _ask = ['get_name']
     _ref = ['set_echo']
 
-    def __init__(self):
+    def __init__(self, echo):
         self.greetings = ['hello', 'hi', 'hey', 'what`s up?']
-
-    def set_echo(self, echo):
         self.echo = echo
 
     def get_name(self):
@@ -46,10 +46,8 @@ if __name__ == "__main__":
     set_context()
     h = create_host()
     e1 = h.spawn('echo1', Echo)
-    bot = h.spawn('bot1', Bot)
-    bot2 = h.spawn('bot2', Bot)
-    bot.set_echo(e1)    # Passing a proxy to a method marked as _ref
-    bot2.set_echo(e1)
+    bot = h.spawn('bot1', Bot, [e1])
+    bot2 = h.spawn('bot2', Bot, [e1])
     bot.say_hi()
     sleep(1)
     e1.echo2('hello there!', [bot2])

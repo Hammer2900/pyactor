@@ -3,9 +3,10 @@ Stress test. SERVER
 @author: Daniel Barcelona Pons
 '''
 from pyactor.context import set_context, create_host, serve_forever
+from pyactor.client import ActorC
 
 
-class Counter(object):
+class Counter(ActorC):
     _tell = ['work']
     _ask = ['see']
 

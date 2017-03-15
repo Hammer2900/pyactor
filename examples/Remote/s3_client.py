@@ -4,9 +4,10 @@ Remote example spawning on a remote server. CLIENT
 '''
 from pyactor.context import set_context, create_host, Host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
+from pyactor.client import ActorC
 
 
-class Server(object):
+class Server(ActorC):
     _ask = {'add', 'wait_a_lot'}
     _tell = ['substract']
 

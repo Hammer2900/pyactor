@@ -3,9 +3,10 @@ Parallel methods sample.
 '''
 from pyactor.context import set_context, create_host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
+from pyactor.client import ActorC
 
 
-class File(object):
+class File(ActorC):
     _ask = ['download']
 
     def download(self, filename):
@@ -14,7 +15,7 @@ class File(object):
         return True
 
 
-class Web(object):
+class Web(ActorC):
     _ask = ['list_files', 'get_file']
     _tell = ['remote_server']
     _parallel = ['list_files', 'get_file', 'remote_server']
@@ -34,7 +35,7 @@ class Web(object):
         return self.server.download(filename, timeout=6)
 
 
-class Workload(object):
+class Workload(ActorC):
     _ask = []
     _tell = ['launch', 'download', 'remote_server']
     _parallel = []

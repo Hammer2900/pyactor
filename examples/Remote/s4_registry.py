@@ -3,13 +3,14 @@ Remote example with a registry. SERVER
 @author: Daniel Barcelona Pons
 '''
 from pyactor.context import set_context, create_host, serve_forever
+from pyactor.client import ActorC
 
 
 class NotFound(Exception):
     pass
 
 
-class Registry(object):
+class Registry(ActorC):
     _ask = ['get_all', 'bind', 'lookup', 'unbind']
     _async = []
     _ref = ['get_all', 'bind', 'lookup']

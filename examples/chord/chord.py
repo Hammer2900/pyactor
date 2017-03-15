@@ -1,4 +1,5 @@
 from pyactor.exceptions import TimeoutError
+from pyactor.client import ActorC
 
 
 k = 7
@@ -48,7 +49,7 @@ class SuccessorError(Exception):
         return 'The successor is down'
 
 
-class Node(object):
+class Node(ActorC):
     _ask = ['init_node', 'successor', 'find_successor', 'get_predecessor',
             'closest_preceding_finger', 'join', 'is_alive', 'find_predecessor',
             'get_finger']

@@ -2,9 +2,10 @@
 Callback sample.
 '''
 from pyactor.context import set_context, create_host, sleep, shutdown
+from pyactor.client import ActorC
 
 
-class Echo(object):
+class Echo(ActorC):
     _tell = ['echo', 'bye']
     _ask = ['say_something']
 
@@ -19,7 +20,7 @@ class Echo(object):
         return 'something'
 
 
-class Bot(object):
+class Bot(ActorC):
     _tell = ['set_echo', 'ping', 'pong']
     _ask = []
 

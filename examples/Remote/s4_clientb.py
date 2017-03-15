@@ -3,11 +3,12 @@ Remote example with registry. CLIENT 2
 @author: Daniel Barcelona Pons
 '''
 from pyactor.context import set_context, create_host, sleep, shutdown
+from pyactor.client import ActorC
 
 from s4_registry import NotFound
 
 
-class Server(object):
+class Server(ActorC):
     _ask = {'add', 'wait_a_lot'}
     _tell = ['substract']
 
@@ -43,6 +44,6 @@ if __name__ == "__main__":
     try:
         registry.unbind('None')
     except NotFound:
-        print "Cannot unbind this object: is not in the registry."
+        print "Can't unbind this object: is not in the registry."
 
     shutdown()

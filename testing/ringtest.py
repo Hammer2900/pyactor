@@ -3,6 +3,7 @@ RING test. Messages per second. Number of nodes.
 @author: Daniel Barcelona Pons
 '''
 from pyactor.context import set_context, create_host, sleep, shutdown
+from pyactor.client import ActorC
 
 from time import time
 
@@ -11,7 +12,7 @@ NUM_NODES = 10000
 NUM_MSGS = 100
 
 
-class Node(object):
+class Node(ActorC):
     _tell = ['set_next', 'init_token', 'take_token']
     _ask = ['get_cnt', 'is_finished']
     _ref = ['set_next']

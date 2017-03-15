@@ -4,9 +4,10 @@ More simple Parallel methods sample.
 '''
 from pyactor.context import set_context, create_host, sleep, shutdown
 from pyactor.exceptions import TimeoutError
+from pyactor.client import ActorC
 
 
-class Work(object):
+class Work(ActorC):
     _ask = ['sleeping']
 
     def sleeping(self, t):
@@ -14,7 +15,7 @@ class Work(object):
         return True
 
 
-class ParaWork(object):
+class ParaWork(ActorC):
     _tell = ['work']
     _ask = ['check_work']
     _parallel = ['work']
