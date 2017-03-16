@@ -17,7 +17,10 @@ class MetaActor(type):
 
 
 class ActorC(object):
-    __metaclass__ = MetaActor
+    # __metaclass__ = MetaActor
+
+    def init_actor(self):
+        pass
 
     def new_interval(self, time, method, *args, **kwargs):
         try: self.__intervals

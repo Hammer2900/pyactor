@@ -236,7 +236,9 @@ class Host(object):
 
             obj.proxy = Proxy(new_actor)
 
-            obj._initial(*param, **kwparam)
+            init = TellWrapper(new_actor.channel, 'init_actor', url)
+
+            init(*param, **kwparam)
             self.launch_actor(url, new_actor)
             return Proxy(new_actor)
 
