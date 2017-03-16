@@ -220,6 +220,7 @@ class Host(object):
 
             obj = klass_()
             obj.id = aid
+            obj.url = url
             if self.running:
                 obj.host = Proxy(self.proxy.actor)
             # else:
