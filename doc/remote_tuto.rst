@@ -189,7 +189,8 @@ and ``pyactor\examples\Remote\s1_serverrbb.py``:
 
 You can configure your rabbit credentials with::
 
-    setRabbitCredentials('user', 'password')
+    setRabbitCredentials('user', 'password') # python 2
+    set_rabbit_credentials('user', 'password') # python 3
 
 If you don't, it will use the default Rabbit guest user, which only can connect
 locally.
